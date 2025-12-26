@@ -1,2 +1,5 @@
 data/creditcard.csv
 data/*csv
+
+model/*pkl
+model/*.sav
