@@ -53,11 +53,26 @@ Built with Python, scikit-learn, and Streamlit.
 This system is intended for educational purposes only.
 Real banking systems combine multiple layers of security, rules, and monitoring— this demo focuses on the ML component only.
 
+📥 Dataset
+This project uses the public Credit Card Fraud Detection dataset from Kaggle.
+Download it here:
+https://www.kaggle.com/mlg-ulb/creditcardfraud
+After downloading:
+Extract the ZIP file
+Rename the CSV (if needed) to:
+creditcard.csv
+Place it inside the project folder:
+Copy code
+
+credit_card_fraud_detection_clean/
+ └── data/
+     └── creditcard.csv
+
 ## 📂 Project Structure
 
-credit_card_fraud_detection/ 
+credit_card_fraud_detection_clean/ 
 ├── data/ 
-│ └── train.csv 
+│ └── creditcard.csv 
 │
 ├── model/ 
 │ └── model.pkl 
