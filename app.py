@@ -14,6 +14,8 @@ REQUIRES_FEATURES = ["Time", "Amount"] + [f"V{i}" for i in range(1, 29)]
 
 st.set_page_config(page_title="Credit Card Fraud Detection", layout="wide")
 st.title("💳 Credit Card Fraud Detection Dashboard")
+st.info("This model was trained using the Kaggle Credit Card Fraud dataset. "
+        "You can upload your own CSV (same structure) - or use demo mode")
 st.write("This dashboard allows you to explore the performance of different machine learning modelsin detecting credit card fraud using the dataset and visualizing the dataset.")
 @st.cache_resource
 def load_model():
@@ -49,9 +51,14 @@ if uploaded_file is not None:
         for col in missing:
             temp[col] = 0  
         data = temp
-        st.success("Uploaded dataset loaded successfully!")
+        st.success("✔ Uploaded dataset loaded successfully!")
 
 if data is None:
+    try:
+        data = load_data("data/sample.csv")
+        st.info("🎬 Demo Mode: Loaded built-in sample dataset")
+    except FileNotFoundError:
+        st.error("No dataset found. Upload a CSV to continue")
     st.stop() 
 
 st.header("📊 Dataset Overview")
