@@ -59,7 +59,7 @@ if data is None:
         st.info("🎬 Demo Mode: Loaded built-in sample dataset")    
     except FileNotFoundError:
         st.error("No dataset found. Upload a CSV to continue")
-    st.stop() 
+        st.stop() 
 
 st.write("DEBUG - Data Shape: ", data.shape)
 st.write("DEBUG - Columns: ", list(data.columns))
