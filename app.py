@@ -16,7 +16,7 @@ st.set_page_config(page_title="Credit Card Fraud Detection", layout="wide")
 st.title("💳 Credit Card Fraud Detection Dashboard")
 st.info("This model was trained using the Kaggle Credit Card Fraud dataset. "
         "You can upload your own CSV (same structure) - or use demo mode")
-st.write("This dashboard allows you to explore the performance of different machine learning modelsin detecting credit card fraud using the dataset and visualizing the dataset.")
+st.write("This dashboard allows you to explore the performance of different machine learning models in detecting credit card fraud using the dataset and visualizing the dataset.")
 @st.cache_resource
 def load_model():
     return joblib.load("model/logreg_model.pkl")
