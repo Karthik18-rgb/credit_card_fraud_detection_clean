@@ -61,9 +61,6 @@ if data is None:
         st.error("No dataset found. Upload a CSV to continue")
         st.stop() 
 
-st.write("DEBUG - Data Shape: ", data.shape)
-st.write("DEBUG - Columns: ", list(data.columns))
-
 st.header("📊 Dataset Overview")
 c1, c2 = st.columns(2)
 with c1:
@@ -95,7 +92,7 @@ if "Class" in data.columns:
 
     with st.expander("⏱️ Fraud vs Time", expanded=False):
         sample = data.sample(min(20000, len(data)))
-        fig, ax = plt.subplots(figsize=(8,4))
+        fig, ax = plt.subplots(figsize=(7,3))
         sns.scatterplot(x="Time", y="Amount", hue="Class", data=sample, ax=ax, alpha=0.5, s=20)
         ax.set_title("Fraud Over Time")
         st.pyplot(fig, use_container_width=False)
