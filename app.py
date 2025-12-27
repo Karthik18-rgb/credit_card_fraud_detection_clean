@@ -56,10 +56,13 @@ if uploaded_file is not None:
 if data is None:
     try:
         data = load_data("data/sample.csv")
-        st.info("🎬 Demo Mode: Loaded built-in sample dataset")
+        st.info("🎬 Demo Mode: Loaded built-in sample dataset")    
     except FileNotFoundError:
         st.error("No dataset found. Upload a CSV to continue")
     st.stop() 
+
+st.write("DEBUG - Data Shape: ", data.shape)
+st.write("DEBUG - Columns: ", list(data.columns))
 
 st.header("📊 Dataset Overview")
 c1, c2 = st.columns(2)
