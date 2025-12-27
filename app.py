@@ -19,16 +19,22 @@ st.write("This dashboard allows you to explore the performance of different mach
 def load_model():
     return joblib.load("model/logreg_model.pkl")
 
-@st.cache_data()
-def load_data():
-    return pd.read_csv("data/creditcard.csv")
-
 model = load_model()
-data = load_data()
+
+@st.cache_data
+def load_data(path):
+    return pd.read_csv(path)
+data = None
+
+try:
+    data = load_data("data/creditcard.csv")
+    st.info("Loaded default dataset")
+except FileNotFoundError:
+    st.warning("Default dataset not found. Please upload a csv file")    
 
 st.sidebar.header("📤 Upload CSV (Optional)")
 uploaded_file = st.sidebar.file_uploader("Upload a CSV with the same columns as dataset:", type=["csv"])
-if uploaded_file:
+if uploaded_file is not None:
     temp = pd.read_csv(uploaded_file)
     st.write("Uploaded CSV preview:")
     st.dataframe(temp.head())
@@ -41,12 +47,12 @@ if uploaded_file:
         st.info("Switched back to default dataset.")
     else:
         for col in missing:
-            temp[col] = data[col].median()   
-            data = temp[REQUIRES_FEATURES + ["Class"]] if "Class" in temp.columns else temp[REQUIRES_FEATURES] 
+            temp[col] = 0  
+        data = temp
+        st.success("Uploaded dataset loaded successfully!")
 
-else:
-    data = data
-    st.info("Using default Kaggle dataset")    
+if data is None:
+    st.stop() 
 
 st.header("📊 Dataset Overview")
 c1, c2 = st.columns(2)
