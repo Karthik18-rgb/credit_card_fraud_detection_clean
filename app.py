@@ -35,7 +35,7 @@ except FileNotFoundError:
     st.warning("Default dataset not found. Please upload a csv file")    
 
 st.sidebar.header("📤 Upload CSV (Optional)")
-uploaded_file = st.sidebar.file_uploader("Upload a CSV with the same columns as dataset:", type=["csv"])
+uploaded_file = st.sidebar.file_uploader("Upload CSV (Time, Amount, V1-V28, Class)", type=["csv"])
 if uploaded_file is not None:
     temp = pd.read_csv(uploaded_file)
     st.write("Uploaded CSV preview:")
@@ -73,58 +73,57 @@ with c1:
 with c2:
     st.write("Summary")
     st.metric("Rows",len(data))
-    st.metric("Features",data.shape[1] - 1)  
+    st.metric("Features",data.shape[1])  
 
 st.header("📈 Visualizations")
 
-with st.expander("📊 Fraud Class Distribution", expanded=False):
-    fig, ax = plt.subplots()
-    sns.countplot(x="Class", data=data, ax=ax)
-    ax.set_xticklabels(["Legit(0)", "Fraud(1)"])
-    ax.set_title("Class Distribution")
-    st.pyplot(fig, use_container_width=False)
-    st.caption("Fraud cases are extremely rare (class imbalance problems).")
+if "Class" in data.columns:
+    with st.expander("📊 Fraud Class Distribution", expanded=False):
+        fig, ax = plt.subplots()
+        sns.countplot(x="Class", data=data, ax=ax)
+        ax.set_title("Class Distribution")
+        st.pyplot(fig, use_container_width=False)
+        st.caption("Fraud cases are extremely rare (class imbalance problems).")
 
-with st.expander("💰 Transaction Amount Distribution", expanded=False):
-    fig, ax = plt.subplots()
-    sns.histplot(x="Amount", data=data, ax=ax, kde=False, bins=60, hue="Class")
-    ax.set_title("Amount vs Fraud")
-    st.pyplot(fig, use_container_width=False)
-    st.caption("Large transactions sometimes show different fraud behavior.")
-
-
-with st.expander("⏱️ Fraud vs Time", expanded=False):
-    sample = data.sample(min(20000, len(data)))
-    fig, ax = plt.subplots(figsize=(8,4))
-    sns.scatterplot(x="Time", y="Amount", hue="Class", data=sample, ax=ax, alpha=0.5, s=20)
-    ax.set_title("Fraud Over Time")
-    st.pyplot(fig, use_container_width=False)
-    st.caption("Fraud often forms clusters at unusual times.")
+    with st.expander("💰 Transaction Amount Distribution", expanded=False):
+        fig, ax = plt.subplots()
+        sns.histplot(x="Amount", data=data, ax=ax, kde=False, bins=60, hue="Class")
+        ax.set_title("Amount vs Fraud")
+        st.pyplot(fig, use_container_width=False)
+        st.caption("Large transactions sometimes show different fraud behavior.")
 
 
-with st.expander("📉 ROC Curve & Auc", expanded=False): 
-    X = data.drop("Class", axis=1)
-    y = data["Class"]
-    y_scores = model.predict_proba(X)[:, 1]
-    fpr, tpr, thresholds = roc_curve(y, y_scores)
-    auc = roc_auc_score(y, y_scores)
-    fig, ax = plt.subplots()
-    ax.plot(fpr, tpr, label=f"AUC = {auc:.4f}")
-    ax.plot([0,1], [0,1], linestyle="--", color="gray")
-    ax.set_xlabel("False Positive Rate")
-    ax.set_ylabel("True Positive Rate (Recall)")
-    ax.set_title("Receiver Operating Characteristic (ROC)")
-    ax.legend()
-    st.pyplot(fig, use_container_width=False)
-    st.caption("A higher AUC means the model is better at distinguishing fraud vs legitimate transactions.")
+    with st.expander("⏱️ Fraud vs Time", expanded=False):
+        sample = data.sample(min(20000, len(data)))
+        fig, ax = plt.subplots(figsize=(8,4))
+        sns.scatterplot(x="Time", y="Amount", hue="Class", data=sample, ax=ax, alpha=0.5, s=20)
+        ax.set_title("Fraud Over Time")
+        st.pyplot(fig, use_container_width=False)
+        st.caption("Fraud often forms clusters at unusual times.")
 
+
+    with st.expander("📉 ROC Curve & Auc", expanded=False): 
+        X = data[REQUIRES_FEATURES]
+        y = data["Class"]
+        y_scores = model.predict_proba(X)[:, 1]
+        fpr, tpr, thresholds = roc_curve(y, y_scores)
+        auc = roc_auc_score(y, y_scores)
+        fig, ax = plt.subplots()
+        ax.plot(fpr, tpr, label=f"AUC = {auc:.4f}")
+        ax.plot([0,1], [0,1], linestyle="--", color="gray")
+        ax.set_xlabel("False Positive Rate")
+        ax.set_ylabel("True Positive Rate (Recall)")
+        ax.set_title("Receiver Operating Characteristic (ROC)")
+        ax.legend()
+        st.pyplot(fig, use_container_width=False)
+        st.caption("A higher AUC means the model is better at distinguishing fraud vs legitimate transactions.")
+else:
+    st.warning("This dataset has no 'Class' column - visualization disabled")
 
 st.header("🕵️‍♂️ Fraud Prediction Tool")
 
-X = data.drop("Class", axis=1)
-y = data["Class"]
-
-index = st.slider("Select Transaction Index",0, len(data) - 1, 0, 1)
+X = data[REQUIRES_FEATURES]
+index = st.slider("Select Transaction Index",0, len(X) - 1, 0, 1)
 row = X.iloc[[index]]
 
 st.write("### Transaction Details")
